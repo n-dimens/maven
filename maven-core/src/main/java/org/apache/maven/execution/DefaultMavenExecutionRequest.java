@@ -21,6 +21,7 @@ package org.apache.maven.execution;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -110,6 +111,8 @@ public class DefaultMavenExecutionRequest
 
     private File pom;
 
+    private List<File> attachedPoms = new ArrayList<>();
+
     private String reactorFailureBehavior = REACTOR_FAIL_FAST;
 
     private List<String> selectedProjects;
@@ -191,6 +194,7 @@ public class DefaultMavenExecutionRequest
         copy.setGoals( original.getGoals() );
         copy.setRecursive( original.isRecursive() );
         copy.setPom( original.getPom() );
+        copy.setAttachedPoms( original.getAttachedPoms() );
         copy.setSystemProperties( original.getSystemProperties() );
         copy.setUserProperties( original.getUserProperties() );
         copy.setShowErrors( original.isShowErrors() );
@@ -270,6 +274,12 @@ public class DefaultMavenExecutionRequest
     public File getPom()
     {
         return pom;
+    }
+
+    @Override
+    public List<File> getAttachedPoms()
+    {
+        return Collections.unmodifiableList( attachedPoms );
     }
 
     @Override
@@ -688,6 +698,18 @@ public class DefaultMavenExecutionRequest
         this.pom = pom;
 
         return this;
+    }
+
+    private void setAttachedPoms( List<File> poms )
+    {
+        if ( poms != null )
+        {
+            this.attachedPoms = new ArrayList<>( poms );
+        }
+        else
+        {
+            this.attachedPoms = null;
+        }
     }
 
     @Override
@@ -1282,5 +1304,20 @@ public class DefaultMavenExecutionRequest
         }
 
         return data;
+    }
+
+    @Override
+    public boolean attachPom( File pom )
+    {
+        for ( File p : attachedPoms )
+        {
+            if ( p.getAbsolutePath().equals( pom.getAbsolutePath() ) )
+            {
+                return false;
+            }
+        }
+
+        attachedPoms.add( pom );
+        return true;
     }
 }

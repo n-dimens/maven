@@ -401,7 +401,8 @@ public class DefaultGraphBuilder
             return projects;
         }
 
-        List<File> files = Arrays.asList( request.getPom().getAbsoluteFile() );
+        List<File> files = new ArrayList<>( request.getAttachedPoms() );
+        files.add( request.getPom().getAbsoluteFile() );
         collectProjects( projects, files, request );
         return projects;
     }

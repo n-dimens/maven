@@ -1504,6 +1504,18 @@ public class MavenCli
             }
         }
 
+        if ( commandLine.hasOption( CLIManager.ATTACHED_PROJECT_LIST ) )
+        {
+            String[] attachedProjects = commandLine.getOptionValues( CLIManager.ATTACHED_PROJECT_LIST );
+            if ( attachedProjects != null )
+            {
+                for ( String pomPath : attachedProjects )
+                {
+                    request.attachPom( new File( pomPath ) );
+                }
+            }
+        }
+
         if ( ( request.getPom() != null ) && ( request.getPom().getParentFile() != null ) )
         {
             request.setBaseDirectory( request.getPom().getParentFile() );

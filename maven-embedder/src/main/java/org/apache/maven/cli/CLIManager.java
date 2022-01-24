@@ -85,6 +85,8 @@ public class CLIManager
 
     public static final String PROJECT_LIST = "pl";
 
+    public static final String ATTACHED_PROJECT_LIST = "ap";
+
     public static final String ALSO_MAKE = "am";
 
     public static final String ALSO_MAKE_DEPENDENTS = "amd";
@@ -135,6 +137,7 @@ public class CLIManager
         options.addOption( Option.builder( FAIL_NEVER ).longOpt( "fail-never" ).desc( "NEVER fail the build, regardless of project result" ).build() );
         options.addOption( Option.builder( RESUME_FROM ).longOpt( "resume-from" ).hasArg().desc( "Resume reactor from specified project" ).build() );
         options.addOption( Option.builder( PROJECT_LIST ).longOpt( "projects" ).desc( "Comma-delimited list of specified reactor projects to build instead of all projects. A project can be specified by [groupId]:artifactId or by its relative path" ).hasArg().build() );
+        options.addOption( Option.builder( ATTACHED_PROJECT_LIST ).longOpt( "attach-project" ).hasArg().desc( "Specify path to project folder" ).build() );
         options.addOption( Option.builder( ALSO_MAKE ).longOpt( "also-make" ).desc( "If project list is specified, also build projects required by the list" ).build() );
         options.addOption( Option.builder( ALSO_MAKE_DEPENDENTS ).longOpt( "also-make-dependents" ).desc( "If project list is specified, also build projects that depend on projects on the list" ).build() );
         options.addOption( Option.builder( LOG_FILE ).longOpt( "log-file" ).hasArg().desc( "Log file where all build output will go (disables output color)" ).build() );

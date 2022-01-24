@@ -200,6 +200,8 @@ public interface MavenExecutionRequest
 
     File getPom();
 
+    List<File> getAttachedPoms();
+
     // Errors
     MavenExecutionRequest setShowErrors( boolean showErrors );
 
@@ -442,4 +444,6 @@ public interface MavenExecutionRequest
      * @since 3.3.0
      */
     Map<String, Object> getData();
+
+    boolean attachPom( File pom );
 }
