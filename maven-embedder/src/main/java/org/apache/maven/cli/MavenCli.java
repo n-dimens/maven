@@ -381,14 +381,7 @@ public class MavenCli
 
             if ( configFile.isFile() )
             {
-                for ( String arg : new String( Files.readAllBytes( configFile.toPath() ) ).split( "\\s+" ) )
-                {
-                    if ( !arg.isEmpty() )
-                    {
-                        args.add( arg );
-                    }
-                }
-
+                args.addAll( readMavenConfig( configFile ) );
                 mavenConfig = cliManager.parse( args.toArray( new String[0] ) );
                 List<?> unrecongized = mavenConfig.getArgList();
                 if ( !unrecongized.isEmpty() )
@@ -421,6 +414,30 @@ public class MavenCli
             cliManager.displayHelp( System.out );
             throw e;
         }
+    }
+
+    private List<String> readMavenConfig( File config ) throws IOException
+    {
+        List<String> args = new ArrayList<>();
+        String configContent = new String( Files.readAllBytes( config.toPath() ) );
+        String[] lines = configContent.split( "\n" );
+        for ( String line : lines )
+        {
+            if ( line.startsWith( "#" ) )
+            {
+                continue;
+            }
+
+            for ( String arg : line.split( "\\s+" ) )
+            {
+                if ( !arg.isEmpty() )
+                {
+                    args.add( arg );
+                }
+            }
+        }
+
+        return Collections.unmodifiableList( args );
     }
 
     private void informativeCommands( CliRequest cliRequest ) throws ExitException
