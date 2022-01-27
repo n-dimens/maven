@@ -1681,6 +1681,12 @@ public class MavenCli
                 {
                     setCliProperty( defStr, userProperties );
                 }
+
+                // TODO: where goal 'test' ?
+                if ( commandLine.getArgList().contains( "test" ) && userProperties.containsKey( "skipTests" ) )
+                {
+                    setCliProperty( "skipTests=false", userProperties );
+                }
             }
         }
 
