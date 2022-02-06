@@ -53,7 +53,7 @@ public class ExecutionEventLogger
 
     private static final int LINE_LENGTH = 72;
     private static final int MAX_PADDED_BUILD_TIME_DURATION_LENGTH = 9;
-    private static final int MAX_PROJECT_NAME_LENGTH = 52;
+    private static final int MAX_PROJECT_NAME_LENGTH = 80;
 
     private int totalProjects;
     private volatile int currentVisitedProjectCount;
@@ -189,12 +189,6 @@ public class ExecutionEventLogger
             buffer.append( project.getName() );
             buffer.append( ' ' );
 
-            if ( !isSingleVersion )
-            {
-                buffer.append( project.getVersion() );
-                buffer.append( ' ' );
-            }
-
             if ( buffer.length() <= MAX_PROJECT_NAME_LENGTH )
             {
                 while ( buffer.length() < MAX_PROJECT_NAME_LENGTH )
@@ -235,6 +229,12 @@ public class ExecutionEventLogger
                 }
                 buffer.append( buildTimeDuration );
                 buffer.append( ']' );
+            }
+
+            if ( !isSingleVersion )
+            {
+                buffer.append( ' ' );
+                buffer.append( project.getVersion() );
             }
 
             logger.info( buffer.toString() );
