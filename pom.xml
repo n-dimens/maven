@@ -47,8 +47,8 @@ under the License.
 
   <properties>
     <maven.version>3.0.5</maven.version>
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
     <classWorldsVersion>2.6.0</classWorldsVersion>
     <commonsCliVersion>1.4</commonsCliVersion>
     <commonsLangVersion>3.8.1</commonsLangVersion>
@@ -451,6 +451,12 @@ under the License.
         <artifactId>hamcrest-library</artifactId>
         <version>1.3</version>
         <scope>test</scope>
+      </dependency>
+      <!-- https://mvnrepository.com/artifact/org.codehaus.groovy/groovy-all -->
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy</artifactId>
+        <version>3.0.9</version>
       </dependency>
     </dependencies>
     <!--bootstrap-start-comment-->

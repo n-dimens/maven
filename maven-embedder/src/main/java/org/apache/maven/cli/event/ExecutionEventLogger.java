@@ -189,12 +189,6 @@ public class ExecutionEventLogger
             buffer.append( project.getName() );
             buffer.append( ' ' );
 
-            if ( !isSingleVersion )
-            {
-                buffer.append( project.getVersion() );
-                buffer.append( ' ' );
-            }
-
             if ( buffer.length() <= MAX_PROJECT_NAME_LENGTH )
             {
                 while ( buffer.length() < MAX_PROJECT_NAME_LENGTH )
@@ -235,6 +229,11 @@ public class ExecutionEventLogger
                 }
                 buffer.append( buildTimeDuration );
                 buffer.append( ']' );
+            }
+
+            if ( !isSingleVersion )
+            {
+                buffer.append( " " + project.getVersion() );
             }
 
             logger.info( buffer.toString() );

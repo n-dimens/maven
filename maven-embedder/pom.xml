@@ -153,6 +153,10 @@ under the License.
       <artifactId>logback-classic</artifactId>
       <optional>true</optional>
     </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy</artifactId>
+    </dependency>
     <!-- CLI -->
     <dependency>
       <groupId>commons-cli</groupId>

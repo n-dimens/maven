@@ -199,5 +199,4 @@ public final class CLIReportingUtils
 
         return String.format( format, d, h, m, s, ms );
     }
-
 }

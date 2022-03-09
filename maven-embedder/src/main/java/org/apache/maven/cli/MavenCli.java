@@ -20,6 +20,9 @@ package org.apache.maven.cli;
  */
 
 import com.google.inject.AbstractModule;
+import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
+import groovy.lang.Script;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.ParseException;
@@ -100,16 +103,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -140,8 +135,6 @@ public class MavenCli
     private static final String EXT_CLASS_PATH = "maven.ext.class.path";
 
     private static final String EXTENSIONS_FILENAME = ".mvn/extensions.xml";
-
-    private static final String MVN_MAVEN_CONFIG = ".mvn/maven.config";
 
     public static final String STYLE_COLOR_PROPERTY = "style.color";
 
@@ -373,39 +366,13 @@ public class MavenCli
 
         cliManager = new CLIManager();
 
-        List<String> args = new ArrayList<>();
-        CommandLine mavenConfig = null;
         try
         {
-            File configFile = new File( cliRequest.multiModuleProjectDirectory, MVN_MAVEN_CONFIG );
-
-            if ( configFile.isFile() )
+            cliRequest.commandLine = cliManager.parse( cliRequest.args );
+            List<CommandLine> mavenConfigs = readMavenConfigs( cliRequest, cliManager );
+            for ( CommandLine mavenConfig : mavenConfigs )
             {
-                args.addAll( readMavenConfig( configFile ) );
-                mavenConfig = cliManager.parse( args.toArray( new String[0] ) );
-                List<?> unrecongized = mavenConfig.getArgList();
-                if ( !unrecongized.isEmpty() )
-                {
-                    throw new ParseException( "Unrecognized maven.config entries: " + unrecongized );
-                }
-            }
-        }
-        catch ( ParseException e )
-        {
-            System.err.println( "Unable to parse maven.config: " + e.getMessage() );
-            cliManager.displayHelp( System.out );
-            throw e;
-        }
-
-        try
-        {
-            if ( mavenConfig == null )
-            {
-                cliRequest.commandLine = cliManager.parse( cliRequest.args );
-            }
-            else
-            {
-                cliRequest.commandLine = cliMerge( cliManager.parse( cliRequest.args ), mavenConfig );
+                cliRequest.commandLine = cliMerge( cliRequest.commandLine, mavenConfig );
             }
         }
         catch ( ParseException e )
@@ -416,28 +383,23 @@ public class MavenCli
         }
     }
 
-    private List<String> readMavenConfig( File config ) throws IOException
-    {
-        List<String> args = new ArrayList<>();
-        String configContent = new String( Files.readAllBytes( config.toPath() ) );
-        String[] lines = configContent.split( "\n" );
-        for ( String line : lines )
+    private List<CommandLine> readMavenConfigs(CliRequest cliRequest, CLIManager cliManager ) throws Exception {
+        List<CommandLine> result = new ArrayList<>();
+        CommandLine temp = cliRequest.commandLine;
+        CommandLine textConfig = new MavenTextConfig( cliManager ).read( cliRequest.multiModuleProjectDirectory );
+        if ( textConfig != null)
         {
-            if ( line.startsWith( "#" ) )
-            {
-                continue;
-            }
-
-            for ( String arg : line.split( "\\s+" ) )
-            {
-                if ( !arg.isEmpty() )
-                {
-                    args.add( arg );
-                }
-            }
+            result.add( textConfig );
+            temp = cliMerge( cliRequest.commandLine, textConfig );
         }
 
-        return Collections.unmodifiableList( args );
+        CommandLine groovyConfig = new MavenGroovyConfig( cliManager, temp ).read( cliRequest.multiModuleProjectDirectory );
+        if ( groovyConfig != null)
+        {
+            result.add( groovyConfig );
+        }
+
+        return Collections.unmodifiableList(result);
     }
 
     private void informativeCommands( CliRequest cliRequest ) throws ExitException
